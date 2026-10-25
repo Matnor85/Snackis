@@ -1,0 +1,25 @@
+﻿@page "/forum"
+
+<PageTitle>Snackis</PageTitle>
+
+<h1>Snackis Forum</h1>
+<p class="text-muted">Välj ett ämne och häng med i snacket.</p>
+
+@foreach (var category in categories)
+{
+    <div class="card mb-3">
+        <div class="card-header"><strong>@category.Name</strong></div>
+        <div class="list-group list-group-flush">
+            @foreach (var topic in category.Topics.OrderBy(t => t.Name))
+            {
+                <a class="list-group-item list-group-item-action" href="topic/@topic.Id">
+                    @topic.Name
+                </a>
+            }
+            @if (!category.Topics.Any())
+            {
+                <div class="list-group-item text-muted">Det finns inga ämnen än.</div>
+            }
+        </div>
+    </div>
+}

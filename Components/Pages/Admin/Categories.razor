@@ -1,0 +1,53 @@
+﻿@page "/admin/categories"
+@attribute [Authorize(Roles = "Admin")]
+
+<PageTitle>Admin - Rubriker</PageTitle>
+
+<h1>Rubriker och ämnen</h1>
+
+@if (error is not null)
+{
+    <div class="alert alert-danger">@error</div>
+}
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5>Ny rubrik</h5>
+        <div class="input-group">
+            <input class="form-control" placeholder="T.ex. Fordonssnack" @bind="newCategoryName" />
+            <button class="btn btn-primary" @onclick="AddCategory">Skapa</button>
+        </div>
+    </div>
+</div>
+
+@foreach (var category in categories)
+{
+    <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <strong>@category.Name</strong>
+            <button class="btn btn-sm btn-outline-danger" @onclick="() => DeleteCategory(category.Id)">
+                Ta bort rubrik
+            </button>
+        </div>
+        <ul class="list-group list-group-flush">
+            @foreach (var topic in category.Topics.OrderBy(t => t.Name))
+            {
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    @topic.Name
+                    <button class="btn btn-sm btn-link text-danger" @onclick="() => DeleteTopic(topic.Id)">
+                        Ta bort
+                    </button>
+                </li>
+            }
+            <li class="list-group-item">
+                <div class="input-group input-group-sm">
+                    <input class="form-control" placeholder="Nytt ämne, t.ex. Bilsnack"
+                           @bind="newTopicNames[category.Id]" />
+                    <button class="btn btn-outline-primary" @onclick="() => AddTopic(category.Id)">
+                        Lägg till ämne
+                    </button>
+                </div>
+            </li>
+        </ul>
+    </div>
+}

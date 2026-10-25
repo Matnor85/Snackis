@@ -1,0 +1,65 @@
+﻿@page "/profile/edit"
+@attribute [Authorize]
+
+<PageTitle>Min profil - Snackis</PageTitle>
+
+<h1>Min profil</h1>
+
+@if (profile is null)
+{
+    <p>Laddar...</p>
+}
+else
+{
+    @if (message is not null)
+    {
+        <div class="alert alert-success">@message</div>
+    }
+    @if (error is not null)
+    {
+        <div class="alert alert-danger">@error</div>
+    }
+
+    <div class="row">
+        <div class="col-md-4 text-center mb-4">
+            @if (!string.IsNullOrEmpty(profile.ProfileImagePath))
+            {
+                <img src="@profile.ProfileImagePath" class="rounded-circle mb-3"
+                     style="width:150px;height:150px;object-fit:cover" alt="Profilbild" />
+            }
+            else
+            {
+                <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center mx-auto mb-3"
+                     style="width:150px;height:150px;font-size:3rem">
+                    @profile.DisplayName.Substring(0, 1).ToUpper()
+                </div>
+            }
+
+            <label class="form-label d-block">Byt profilbild</label>
+            <InputFile OnChange="UploadImage" accept="image/*" class="form-control" />
+            <small class="text-muted">Max 2 MB</small>
+        </div>
+
+        <div class="col-md-8">
+            <div class="mb-3">
+                <label class="form-label">Visningsnamn</label>
+                <input class="form-control" @bind="displayName" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Om mig</label>
+                <textarea class="form-control" rows="6" @bind="bio"
+                placeholder="Berätta lite om dig själv..."></textarea>
+            </div>
+
+            <button class="btn btn-primary" @onclick="Save">Spara</button>
+            <a href="Account/Manage" class="btn btn-outline-secondary ms-2">
+                Kontoinställningar (e-post och lösenord)
+            </a>
+
+            <p class="text-muted mt-3">
+                Medlem sedan @profile.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd")
+            </p>
+        </div>
+    </div>
+}

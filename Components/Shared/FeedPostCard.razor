@@ -1,0 +1,77 @@
+﻿<div class="card mb-3 shadow-sm">
+    <div class="card-body pb-2">
+        <div class="d-flex align-items-center mb-2">
+            
+            <a href="profile/@Post.AuthorId" class="me-2">
+                <Avatar ImagePath="@Post.AuthorImage" Name="@Post.AuthorName" Size="40" />
+            </a>
+
+            <div class="flex-grow-1">
+                
+                <a href="profile/@Post.AuthorId" class="fw-bold text-body text-decoration-none">@Post.AuthorName</a>
+
+                
+                @if (Post.ProfileOwnerId != Post.AuthorId)
+                {
+                    <span class="text-muted"> ▸ </span>
+                    <a href="profile/@Post.ProfileOwnerId" class="fw-bold text-body text-decoration-none">@Post.ProfileOwnerName</a>
+                }
+
+                <div><small class="text-muted">@Post.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</small></div>
+            </div>
+
+            @if (CanDelete)
+            {
+                @if (confirmDelete)
+                {
+                    <button class="btn btn-sm btn-danger" @onclick="Delete">Ta bort?</button>
+                    <button class="btn btn-sm btn-link" @onclick="() => confirmDelete = false">Nej</button>
+                }
+                else
+                {
+                    <button class="btn btn-sm btn-link text-muted" title="Ta bort" @onclick="() => confirmDelete = true">✕</button>
+                }
+            }
+        </div>
+
+        @if (!string.IsNullOrEmpty(Post.Content))
+        {
+            <p class="mb-2" style="white-space:pre-wrap">@Post.Content</p>
+        }
+    </div>
+
+    @if (Post.MediaType == "image")
+    {
+        <img src="@Post.MediaPath" alt="" class="w-100" style="max-height:600px;object-fit:contain;background:#000" />
+    }
+    else if (Post.MediaType == "video")
+    {
+        <video src="@Post.MediaPath" controls class="w-100" style="max-height:600px;background:#000"></video>
+    }
+
+    <div class="card-body pt-2">
+        <small class="text-muted">@Post.Comments.Count kommentar@(Post.Comments.Count == 1 ? "" : "er")</small>
+
+        @foreach (var c in Post.Comments)
+        {
+            <div class="d-flex mt-2">
+                <a href="profile/@c.AuthorId">
+                    <Avatar ImagePath="@c.AuthorImage" Name="@c.AuthorName" Size="32" />
+                </a>
+
+                <div class="ms-2 bg-light rounded-3 px-3 py-2">
+                    <a href="profile/@c.AuthorId" class="fw-bold small text-body text-decoration-none">@c.AuthorName</a>
+                    <div class="small" style="white-space:pre-wrap">@c.Content</div>
+                </div>
+            </div>
+        }
+
+        @if (CurrentUserId is not null)
+        {
+            <div class="input-group input-group-sm mt-2">
+                <input class="form-control" placeholder="Skriv en kommentar..." @bind="commentText" />
+                <button class="btn btn-outline-primary" @onclick="SendComment">Skicka</button>
+            </div>
+        }
+    </div>
+</div>

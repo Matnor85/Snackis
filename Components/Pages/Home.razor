@@ -1,0 +1,48 @@
+﻿@page "/"
+@* AI-assisterad flöde: Facebook-liknande flöde där inloggade kan dela
+   text, bilder och filmer. Alla kan se flödet, inloggade kan kommentera. *@
+<PageTitle>Snackis</PageTitle>
+
+<div class="mx-auto" style="max-width:680px">
+    <AuthorizeView>
+        <Authorized>
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                    <textarea class="form-control mb-2" rows="3" placeholder="Vad vill du dela?"
+                              @bind="newContent"></textarea>
+
+                    <div class="d-flex align-items-center gap-2">
+                        <InputFile @key="fileInputKey" OnChange="OnFileSelected"
+                                   accept="image/*,video/mp4,video/webm"
+                                   class="form-control form-control-sm" />
+                        <button class="btn btn-primary" @onclick="Publish" disabled="@isPublishing">
+                            @(isPublishing ? "Publicerar..." : "Publicera")
+                        </button>
+                    </div>
+                    <small class="text-muted">Bilder max 5 MB, filmer (mp4/webm) max 50 MB</small>
+
+                    @if (error is not null)
+                    {
+                        <div class="alert alert-danger mt-2 mb-0 py-2">@error</div>
+                    }
+                </div>
+            </div>
+        </Authorized>
+        <NotAuthorized>
+            <div class="alert alert-info">
+                <a href="Account/Login">Logga in</a> eller <a href="Account/Register">registrera dig</a> för att dela något.
+            </div>
+        </NotAuthorized>
+    </AuthorizeView>
+
+    @if (!posts.Any())
+    {
+        <p class="text-muted text-center mt-5">Flödet är tomt. Bli först med att dela något!</p>
+    }
+
+    @foreach (var post in posts)
+    {
+        <FeedPostCard @key="post.Id" Post="post" CurrentUserId="@userId" IsAdmin="isAdmin"
+                      OnComment="AddComment" OnDelete="DeletePost" />
+    }
+</div>

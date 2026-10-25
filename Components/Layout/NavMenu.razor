@@ -1,0 +1,78 @@
+﻿@implements IDisposable
+@using System.Security.Claims
+@* AI-assisterad: Bootstrap-navbar högst upp i stället för mallens
+   sidomeny. Utloggning är ett formulär med POST och AntiforgeryToken av säkerhetsskäl. *@
+
+<nav class="navbar navbar-expand-md navbar-dark bg-dark sticky-top">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="">Snackis</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Meny">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mainNav">
+            @* Vänster *@
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="" Match="NavLinkMatch.All">Hem</NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="forum">Forum</NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="api-test">API</NavLink>
+                </li>
+            </ul>
+
+            @* Höger *@
+            <ul class="navbar-nav ms-auto align-items-md-center">
+                <AuthorizeView Roles="Admin">
+                    <li class="nav-item dropdown">
+                        <button class="nav-link dropdown-toggle border-0 bg-transparent" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                            Admin
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="admin/categories">Rubriker och ämnen</a></li>
+                            <li><a class="dropdown-item" href="admin/reports">Anmälningar</a></li>
+                        </ul>
+                    </li>
+                </AuthorizeView>
+
+                <AuthorizeView>
+                    <Authorized>
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="messages">
+                                @if (unreadCount > 0)
+                                {
+                                    <span class="badge rounded-pill bg-danger me-1">@unreadCount</span>
+                                }
+                                Meddelanden
+                            </NavLink>
+                        </li>
+                        <NavLink class="nav-link" href="@($"profile/{context.User.FindFirstValue(ClaimTypes.NameIdentifier)}")">
+                            Min profil
+                        </NavLink>
+                        <li class="nav-item">
+                            <form action="Account/Logout" method="post" class="d-inline">
+                                <AntiforgeryToken />
+                                <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+                                <button type="submit" class="nav-link border-0 bg-transparent">Logga ut</button>
+                            </form>
+                        </li>
+                    </Authorized>
+                    <NotAuthorized>
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="Account/Register">Registrera</NavLink>
+                        </li>
+                        <li class="nav-item">
+                            <NavLink class="nav-link" href="Account/Login">Logga in</NavLink>
+                        </li>
+                    </NotAuthorized>
+                </AuthorizeView>
+            </ul>
+        </div>
+    </div>
+</nav>

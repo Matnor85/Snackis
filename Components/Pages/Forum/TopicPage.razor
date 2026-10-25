@@ -1,0 +1,46 @@
+﻿@page "/topic/{TopicId:int}"
+
+@if (topic is null)
+{
+    <p>Ämnet finns inte.</p>
+}
+else
+{
+    <PageTitle>@topic.Name - Snackis</PageTitle>
+
+    <nav class="mb-2">
+        <a href="forum">Forum</a> / @topic.Category.Name / <strong>@topic.Name</strong>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>@topic.Name</h1>
+        <AuthorizeView>
+            <Authorized>
+                <a class="btn btn-primary" href="topic/@TopicId/new">Ny diskussion</a>
+            </Authorized>
+            <NotAuthorized>
+                <a href="Account/Login">Logga in</a> för att skriva.
+            </NotAuthorized>
+        </AuthorizeView>
+    </div>
+
+    @if (!discussions.Any())
+    {
+        <p class="text-muted">Inga diskussioner än. Bli först!</p>
+    }
+
+    <div class="list-group">
+        @foreach (var d in discussions)
+        {
+            <a class="list-group-item list-group-item-action" href="discussion/@d.Id">
+                <div class="d-flex justify-content-between">
+                    <strong>@d.Title</strong>
+                    <span class="badge bg-secondary">@d.PostCount inlägg</span>
+                </div>
+                <small class="text-muted">
+                    @d.AuthorName · @d.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")
+                </small>
+            </a>
+        }
+    </div>
+}

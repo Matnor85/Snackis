@@ -1,0 +1,77 @@
+﻿@page "/api-test"
+
+<PageTitle>API - Snackis</PageTitle>
+
+<h1>API</h1>
+
+<div class="card mb-4 shadow-sm">
+    <div class="card-body">
+        <h5>Alla inlägg i en diskussion</h5>
+        <p class="text-muted mb-2"><code>GET /api/discussions/{id}/posts</code></p>
+
+        <div class="input-group mb-3" style="max-width:300px">
+            <input type="number" class="form-control" placeholder="Diskussion, ex 1" @bind="discussionId" />
+            <button class="btn btn-primary" @onclick="GetPosts">Hämta</button>
+        </div>
+
+        @if (postsNotFound)
+        {
+            <div class="alert alert-warning mb-0">Ingen diskussion med id @discussionId.</div>
+        }
+
+        @if (posts is not null)
+        {
+            <table class="table table-sm table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Författare</th>
+                        <th>Datum</th>
+                        <th>Inlägg</th>
+                        <th>Svar på</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in posts)
+                    {
+                        <tr>
+                            <td>@p.Id</td>
+                            <td>@p.AuthorName</td>
+                            <td class="text-nowrap">@p.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
+                            <td style="white-space:pre-wrap">@p.Content</td>
+                            <td>@(p.ParentPostId?.ToString() ?? "-")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+<div class="card mb-4 shadow-sm">
+    <div class="card-body">
+        <h5>Hämta en person via id</h5>
+        <p class="text-muted mb-2"><code>GET /api/users/{id}</code></p>
+
+        <div class="input-group mb-3" style="max-width:300px">
+            <input type="number" class="form-control" placeholder="Id, t.ex. 1" @bind="userId" />
+            <button class="btn btn-primary" @onclick="GetUser">Hämta</button>
+        </div>
+
+        @if (userNotFound)
+        {
+            <div class="alert alert-warning mb-0">Ingen användare med id @userId.</div>
+        }
+
+        @if (user is not null)
+        {
+            <ul class="list-group" style="max-width:400px">
+                <li class="list-group-item"><strong>Id:</strong> @user.Id</li>
+                <li class="list-group-item"><strong>Roll:</strong> @user.Role</li>
+                <li class="list-group-item"><strong>Profilnamn:</strong> @user.DisplayName</li>
+                <li class="list-group-item"><strong>E-post:</strong> @user.Email</li>
+                <li class="list-group-item"><strong>Medlem sedan:</strong> @user.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd")</li>
+            </ul>
+        }
+    </div>
+</div>

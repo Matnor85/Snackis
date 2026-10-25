@@ -1,0 +1,25 @@
+﻿@page "/topic/{TopicId:int}/new"
+@attribute [Authorize]
+
+
+<PageTitle>Ny diskussion - Snackis</PageTitle>
+
+<h1>Ny diskussion</h1>
+
+@if (error is not null)
+{
+    <div class="alert alert-danger">@error</div>
+}
+
+<div class="mb-3">
+    <label class="form-label">Rubrik</label>
+    <input class="form-control" @bind="title" />
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Inlägg</label>
+    <textarea class="form-control" rows="6" @bind="content"></textarea>
+</div>
+
+<button class="btn btn-primary" @onclick="Create">Publicera</button>
+<a class="btn btn-link" href="topic/@TopicId">Avbryt</a>

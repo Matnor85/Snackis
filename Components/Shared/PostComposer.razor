@@ -1,0 +1,20 @@
+﻿<div class="card mb-4 shadow-sm">
+    <div class="card-body">
+        <textarea class="form-control mb-2" rows="3" placeholder="@Placeholder" @bind="content"></textarea>
+
+        <div class="d-flex align-items-center gap-2">
+            <InputFile @key="fileInputKey" OnChange="OnFileSelected"
+                       accept="image/*,video/mp4,video/webm"
+                       class="form-control form-control-sm" />
+            <button class="btn btn-primary" @onclick="Publish" disabled="@isPublishing">
+                @(isPublishing ? "Publicerar..." : "Publicera")
+            </button>
+        </div>
+        <small class="text-muted">Bilder max 5 MB, filmer (mp4/webm) max 50 MB</small>
+
+        @if (error is not null)
+        {
+            <div class="alert alert-danger mt-2 mb-0 py-2">@error</div>
+        }
+    </div>
+</div>

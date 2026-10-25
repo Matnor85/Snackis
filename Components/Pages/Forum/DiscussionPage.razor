@@ -1,0 +1,40 @@
+﻿@page "/discussion/{DiscussionId:int}"
+
+@if (discussion is null)
+{
+    <p>Diskussionen finns inte.</p>
+}
+else
+{
+    <PageTitle>@discussion.Title - Snackis</PageTitle>
+
+    <nav class="mb-2">
+        <a href="forum">Forum</a> / <a href="topic/@discussion.TopicId">@discussion.TopicName</a>
+    </nav>
+
+    <h1 class="mb-4">@discussion.Title</h1>
+
+    @if (error is not null)
+    {
+        <div class="alert alert-danger">@error</div>
+    }
+
+    @foreach (var post in discussion.Posts)
+    {
+        <PostItem Post="post" OnReplay="HandleReply" OnReport="HandleReport"
+                  OnDelete="HandleDelete" OnDeletePermanently="HandleDeletePermanently" />
+    }
+
+    <hr />
+
+    <AuthorizeView>
+        <Authorized>
+            <h5>Skriv ett inlägg</h5>
+            <textarea class="form-control mb-2" rows="4" @bind="newPost"></textarea>
+            <button class="btn btn-primary" @onclick="() => AddPost(null, newPost)">Skicka</button>
+        </Authorized>
+        <NotAuthorized>
+            <p><a href="Account/Login">Logga in</a> för att delta i diskussionen.</p>
+        </NotAuthorized>
+    </AuthorizeView>
+}

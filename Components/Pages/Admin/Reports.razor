@@ -1,0 +1,57 @@
+﻿@page "/admin/reports"
+@attribute [Authorize(Roles = "Admin")]
+
+<PageTitle>Admin - Anmälningar</PageTitle>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Anmälningar</h1>
+    <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="showHandled"
+               @bind="showHandled" @bind:after="LoadAsync" />
+        <label class="form-check-label" for="showHandled">Visa hanterade</label>
+    </div>
+</div>
+
+@if (!reports.Any())
+{
+    <p class="text-muted">Inga anmälningar att granska.</p>
+}
+
+@foreach (var report in reports)
+{
+    <div class="card mb-3 @(report.IsHandled ? "opacity-50" : "border-danger")">
+        <div class="card-body">
+            <div class="d-flex justify-content-between">
+                <small class="text-muted">
+                    Anmäld av <strong>@report.ReporterName</strong>
+                    @report.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")
+                </small>
+                @if (report.IsHandled)
+                {
+                    <span class="badge bg-success">Hanterad</span>
+                }
+            </div>
+
+            <p class="mt-2 mb-2"><strong>Anledning:</strong> @report.Reason</p>
+
+            <blockquote class="border-start border-3 ps-3 text-muted">
+                <small>@report.PostAuthorName skrev i "@report.DiscussionTitle":</small>
+                <div style="white-space:pre-wrap">@report.PostContent</div>
+            </blockquote>
+
+            <a href="discussion/@report.DiscussionId" class="btn btn-sm btn-outline-secondary">
+                Visa diskussionen
+            </a>
+
+            @if (!report.IsHandled)
+            {
+                <button class="btn btn-sm btn-outline-success ms-2" @onclick="() => Ignore(report.Id)">
+                    Ignorera
+                </button>
+                <button class="btn btn-sm btn-danger ms-2" @onclick="() => RemovePost(report.PostId)">
+                    Ta bort inlägget
+                </button>
+            }
+        </div>
+    </div>
+}

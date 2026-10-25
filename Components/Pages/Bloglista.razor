@@ -1,0 +1,17 @@
+﻿@page "/bloglista"
+@rendermode InteractiveServer
+<h3>Bloglista</h3>
+
+@if (Topics == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <ul>
+        @foreach (var topic in Topics)
+        {
+            <li>@topic.Category</li>
+        }
+    </ul>
+}

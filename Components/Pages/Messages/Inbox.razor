@@ -1,0 +1,63 @@
+﻿@page "/messages"
+@attribute [Authorize]
+
+<PageTitle>Meddelanden - Snackis</PageTitle>
+
+<h1>Meddelanden</h1>
+
+<div class="mb-4">
+    <input class="form-control" placeholder="Sök efter en person att skriva till..."
+           @bind="searchTerm" @bind:event="oninput" @bind:after="Search" />
+
+    @if (searchResults.Any())
+    {
+        <div class="list-group mt-1">
+            @foreach (var user in searchResults)
+            {
+                <a class="list-group-item list-group-item-action" href="messages/@user.Id">
+                    @user.DisplayName
+                </a>
+            }
+        </div>
+    }
+</div>
+
+@if (!conversations.Any())
+{
+    <p class="text-muted">Du har inga meddelanden än.</p>
+}
+
+<div class="list-group">
+    @foreach (var c in conversations)
+    {
+        <a class="list-group-item list-group-item-action d-flex align-items-center" href="messages/@c.OtherUserId">
+            @if (!string.IsNullOrEmpty(c.OtherUserImage))
+            {
+                <img src="@c.OtherUserImage" class="rounded-circle me-3"
+                     style="width:48px;height:48px;object-fit:cover" alt="" />
+            }
+            else
+            {
+                <div class="rounded-circle me-3 bg-secondary text-white d-flex align-items-center justify-content-center flex-shrink-0"
+                     style="width:48px;height:48px;font-weight:bold">
+                    @c.OtherUserName.Substring(0, 1).ToUpper()
+                </div>
+            }
+
+            <div class="flex-grow-1 overflow-hidden">
+                <div class="d-flex justify-content-between">
+                    <strong>@c.OtherUserName</strong>
+                    <small class="text-muted">@c.LastMessageAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</small>
+                </div>
+                <div class="text-truncate @(c.UnreadCount > 0 ? "fw-bold" : "text-muted")">
+                    @c.LastMessage
+                </div>
+            </div>
+
+            @if (c.UnreadCount > 0)
+            {
+                <span class="badge bg-primary rounded-pill ms-2">@c.UnreadCount</span>
+            }
+        </a>
+    }
+</div>

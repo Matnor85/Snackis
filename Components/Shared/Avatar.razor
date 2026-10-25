@@ -1,0 +1,15 @@
+﻿@* AI-assisterad: återanvändbar profilbild. Visar bilden, eller första
+   bokstaven i namnet om bild saknas. Size * 2 / 5 i stället för Size / 2.5 för att
+   undvika decimalkomma i CSS med svenska inställningar. *@
+@if (!string.IsNullOrEmpty(ImagePath))
+{
+    <img src="@ImagePath" alt="@Name" class="rounded-circle flex-shrink-0"
+         style="width:@(Size)px;height:@(Size)px;object-fit:cover" />
+}
+else
+{
+    <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center flex-shrink-0"
+         style="width:@(Size)px;height:@(Size)px;font-weight:bold;font-size:@(Size * 2 / 5)px">
+        @Initial
+    </div>
+}

@@ -1,0 +1,95 @@
+﻿<div class="d-flex mb-3" style="margin-left:@(Math.Min(Depth, 5) * 2)rem">
+    @if (!string.IsNullOrEmpty(Post.AuthorImage))
+    {
+        <img src="@Post.AuthorImage" alt="@Post.AuthorName"
+             class="rounded-circle me-3" style="width:48px;height:48px;object-fit:cover" />
+    }
+    else
+    {
+        <div class="rounded-circle me-3 bg-secondary text-white d-flex align-items-center justify-content-center flex-shrink-0"
+             style="width:48px;height:48px;font-weight:bold">
+            @Post.AuthorName.Substring(0, 1).ToUpper()
+        </div>
+    }
+
+    <div class="flex-grow-1">
+        <div class="card">
+            <div class="card-body py-2">
+                <div class="d-flex justify-content-between">
+                    <a href="profile/@Post.AuthorId" class="fw-bold text-body text-decoration-none">@Post.AuthorName</a>
+                    <small class="text-muted">@Post.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</small>
+                </div>
+                @if (IsRemoved)
+                {
+                    <p class="mb-0 mt-1 fst-italic text-muted">@Post.Content</p>
+                }
+                else
+                {
+                    <p class="mb-0 mt-1" style="white-space:pre-wrap">@Post.Content</p>
+                }
+            </div>
+        </div>
+
+        <AuthorizeView>
+            <a class="btn btn-sm btn-link px-0 me-3" href="messages/@Post.AuthorId">Meddelande</a>
+            <button class="btn btn-sm btn-link px-0 me-3" @onclick="ToggleReplay">
+                @(showReplay ? "Avbryt" : "Svara")
+            </button>
+            @if (!IsRemoved)
+            {
+                <button class="btn btn-sm btn-link px-0 me-3 text-danger" @onclick="ToggleReport">
+                    @(showReport ? "Avbryt anmälan" : "Anmäl")
+                </button>
+            }
+        </AuthorizeView>
+        @* AI-assisterad admin raderar inlägg:
+           Första klicket suddar ut texten, så att svaren finns kvar.
+           På ett utsuddat inlägg kan admin sedan radera det permanent, med svar. *@
+        <AuthorizeView Roles="Admin">
+            @if (confirmDelete)
+            {
+                <button class="btn btn-sm btn-danger" @onclick="Delete">
+                    @(IsRemoved ? "Bekräfta permanent radering" : "Bekräfta borttagning")
+                </button>
+                <button class="btn btn-sm btn-link" @onclick="() => confirmDelete = false">Avbryt</button>
+            }
+            else
+            {
+                <button class="btn btn-sm btn-link px-0 text-danger" @onclick="() => confirmDelete = true">
+                    @(IsRemoved ? "Radera" : "Ta bort")
+                </button>
+            }
+        </AuthorizeView>
+
+
+
+        @if (showReplay)
+        {
+            <div class="mb-2">
+                <textarea class="form-control form-control-sm mb-1" rows="2" @bind="replayText"
+                          placeholder="Svara @Post.AuthorName..."></textarea>
+                <button class="btn btn-sm btn-primary" @onclick="SendReplay">Skicka</button>
+            </div>
+        }
+
+        @if (showReport)
+        {
+            <div class="mb-2">
+                <input class="form-control form-control-sm mb-1" @bind="reportReason"
+                       placeholder="Varför är inlägget olämpligt?" />
+                <button class="btn btn-sm btn-danger" @onclick="SendReport">Skicka anmälan</button>
+            </div>
+        }
+
+        @if (reportMessage is not null)
+        {
+            <div class="small text-muted mb-2">@reportMessage</div>
+        }
+    </div>
+</div>
+
+@foreach (var reply in Post.Replies)
+{
+    <PostItem Post="reply" Depth="Depth + 1" OnReplay="OnReplay" OnReport="OnReport"
+              OnDelete="OnDelete" OnDeletePermanently="OnDeletePermanently" />
+}
